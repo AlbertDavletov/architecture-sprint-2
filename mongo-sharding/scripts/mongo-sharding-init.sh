@@ -6,6 +6,8 @@ rs.initiate({_id : 'config_server',configsvr:true,members: [{ _id : 0, host : 'c
 EOF
 echo -e "Инициализация configSrv завершена."
 
+#######################################################################
+
 sleep 5
 echo -e "\n\nShard1..."
 docker compose exec -T shard1 mongosh --port 27018 --quiet <<EOF
@@ -13,6 +15,7 @@ rs.initiate({_id : "shard1",members: [{ _id : 0, host : "shard1:27018" }]});
 EOF
 echo -e "Инициализация Shard1 завершена."
 
+#######################################################################
 
 sleep 5
 echo -e "\n\nShard2..."
@@ -21,6 +24,7 @@ rs.initiate({_id : "shard2",members: [{ _id : 0, host : "shard2:27019" }]});
 EOF
 echo -e "Инициализация Shard2 завершена."
 
+#######################################################################
 
 sleep 5
 echo -e "\n\nДобавление шардов в кластер..."
@@ -29,6 +33,8 @@ sh.addShard("shard1/shard1:27018");
 sh.addShard("shard2/shard2:27019");
 EOF
 echo -e "Добавление шардов в кластер завершено."
+
+#######################################################################
 
 sleep 5
 echo -e "\n\nЗагрузка данных..."
@@ -44,6 +50,7 @@ db.helloDoc.countDocuments();
 EOF
 echo -e "Загрузка данных завершена."
 
+#######################################################################
 
 sleep 5
 echo -e "\n\nПроверяем данные в Shard1..."
@@ -51,6 +58,8 @@ docker compose exec -T shard1 mongosh --port 27018 --quiet <<EOF
 use somedb;
 db.helloDoc.countDocuments();
 EOF
+
+#######################################################################
 
 sleep 5
 echo -e "\n\nПроверяем данные в Shard2..."

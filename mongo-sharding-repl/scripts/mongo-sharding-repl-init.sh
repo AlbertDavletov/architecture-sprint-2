@@ -6,6 +6,8 @@ rs.initiate({_id : 'config_server',configsvr:true,members: [{ _id : 0, host : 'c
 EOF
 echo -e "Инициализация configSrv завершена."
 
+#######################################################################
+
 sleep 5
 echo -e "\n\nShard1..."
 docker compose exec -T shard1-primary mongosh --port 27018 --quiet <<EOF
@@ -20,6 +22,7 @@ rs.initiate({
 EOF
 echo -e "Инициализация Shard1 завершена."
 
+#######################################################################
 
 sleep 5
 echo -e "\n\nShard2..."
@@ -35,6 +38,7 @@ rs.initiate({
 EOF
 echo -e "Инициализация Shard2 завершена."
 
+#######################################################################
 
 sleep 5
 echo -e "\n\nДобавление шардов в кластер..."
@@ -43,6 +47,8 @@ sh.addShard("shard1ReplicaSet/shard1-primary:27018,shard1-secondary1:27019,shard
 sh.addShard("shard2ReplicaSet/shard2-primary:27021,shard2-secondary1:27022,shard2-secondary2:27023");
 EOF
 echo -e "Добавление шардов в кластер завершено."
+
+#######################################################################
 
 sleep 5
 echo -e "\n\nЗагрузка данных..."
@@ -59,31 +65,48 @@ EOF
 echo -e "Загрузка данных завершена."
 
 
+#######################################################################
+
 sleep 5
-echo -e "\n\nПроверяем данные в Shard1..."
+echo -e "\n\nПроверяем данные в shard1-primary..."
 docker compose exec -T shard1-primary mongosh --port 27018 --quiet <<EOF
 use somedb;
 db.helloDoc.countDocuments();
 EOF
 
 sleep 5
-echo -e "\n\nПроверяем данные в Shard2..."
-docker compose exec -T shard2-primary mongosh --port 27021 --quiet <<EOF
-use somedb;
-db.helloDoc.countDocuments();
-EOF
-
-
-sleep 5
-echo -e "\n\nПроверяем данные в Replica (shard1-secondary1)..."
+echo -e "\n\nПроверяем данные в shard1-secondary1..."
 docker compose exec -T shard1-secondary1 mongosh --port 27019 --quiet <<EOF
 use somedb;
 db.helloDoc.countDocuments();
 EOF
 
 sleep 5
-echo -e "\n\nПроверяем данные в Replica (shard2-secondary1)..."
+echo -e "\n\nПроверяем данные в shard1-secondary2..."
+docker compose exec -T shard1-secondary2 mongosh --port 27020 --quiet <<EOF
+use somedb;
+db.helloDoc.countDocuments();
+EOF
+
+#######################################################################
+
+sleep 5
+echo -e "\n\nПроверяем данные в shard2-primary..."
+docker compose exec -T shard2-primary mongosh --port 27021 --quiet <<EOF
+use somedb;
+db.helloDoc.countDocuments();
+EOF
+
+sleep 5
+echo -e "\n\nПроверяем данные в shard2-secondary1..."
 docker compose exec -T shard2-secondary1 mongosh --port 27022 --quiet <<EOF
+use somedb;
+db.helloDoc.countDocuments();
+EOF
+
+sleep 5
+echo -e "\n\nПроверяем данные в shard2-secondary2..."
+docker compose exec -T shard2-secondary2 mongosh --port 27023 --quiet <<EOF
 use somedb;
 db.helloDoc.countDocuments();
 EOF
