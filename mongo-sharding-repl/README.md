@@ -8,11 +8,28 @@
 docker compose up -d
 ```
 
+Удалить докер контейнеры
+
+```shell
+docker compose down -v
+```
+
 Заполняем mongodb данными
 
 ```shell
-./scripts/mongo-init.sh
+./scripts/mongo-sharding-repl-init.sh
 ```
+
+## Топология
+
+![Топология](./images/mongo-sharding-repl-topology.png)
+
+## Проверяем данные на шардах и репликах
+
+- Как мы видим исходные данные разделены по шардам примерно поровну. 
+- Реплики каждого из шардов содержат такое же количество данных.
+
+![Данные](./images/mongo-sharding-repl-results.png)
 
 ## Как проверить
 
